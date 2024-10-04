@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const dotenv = require("dotenv");
+dotenv.config();
 
 mongoose
-  .connect("", {
+  .connect("mongodb+srv://HamdyAbdelrahmann:Scdg2qwZ8h2t5znC@cluster0.2ih3a.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
