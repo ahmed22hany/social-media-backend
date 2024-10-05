@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const authRouter = require("./routes/auth-routes");
+const followRouter = require("./routes/follow");
+const unfollowRouter = require("./routes/UnFollow");
 
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -21,7 +23,7 @@ mongoose
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.use(
   cors({
@@ -40,6 +42,8 @@ app.use(
 
 app.use(express.json());
 
+app.use("/follow", followRouter);
+app.use("/unfollow", unfollowRouter);
 app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => console.log(`Server is running now on ${PORT} port`));

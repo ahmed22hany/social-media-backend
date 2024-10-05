@@ -1,7 +1,7 @@
 const express = require("express");
-const router = express.Route();
-const unfollowController = require("../controllers/unFollow");
+const router = express.Router();
+const { unfollowUser } = require("../controllers/unFollow");
 
-router.post("/", unfollowController.unfollowUser);
+router.post("/", unfollowUser);
 
-module.exprts = router;
+module.exports = router;

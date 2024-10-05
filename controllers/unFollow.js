@@ -14,7 +14,7 @@ const unfollowUser = async (req, res) => {
     }
 
     //check if not following the user
-    if (!user.following.include(unfollowUserID)) {
+    if (!user.following.includes(unfollowUserID)) {
       return res.status(404).json({ message: "User is not Followed By You" });
     }
 
@@ -32,4 +32,4 @@ const unfollowUser = async (req, res) => {
   }
 };
 
-module.exprts = { unfollowUser };
+module.exports = { unfollowUser };

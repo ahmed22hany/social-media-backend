@@ -32,6 +32,6 @@ const followUser = async (req, res) => {
   }
 };
 
-module.exprts = {
+module.exports = {
   followUser,
 };
