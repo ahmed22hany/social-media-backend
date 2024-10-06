@@ -3,12 +3,12 @@ const userModel = require("../models/user-model");
 const unfollowUser = async (req, res) => {
   const { userID, unfollowUserID } = req.body;
 
-  try {
+  try {   
     //get the user from the DataBase
     const user = await userModel.findById(userID);
     const userToUnfollow = await userModel.findById(unfollowUserID);
 
-    //validate the IDs
+    //validate the IDs  
     if (!user || !unfollowUserID) {
       return res.status(404).json({ message: "User Not Found!" });
     }
