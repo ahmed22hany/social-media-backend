@@ -7,8 +7,12 @@ const userSchema = mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, minLength: 6, required: true },
     profilePic: { type: String, default: "" },
-    followers: { type: [String], default: [] },
-    following: { type: [String], default: [] },
+    followers: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] },
+    ],
+    following: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] },
+    ],
     bio: { type: String, default: "" },
   },
   {

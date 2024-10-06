@@ -44,6 +44,7 @@ app.use(express.json());
 
 app.use("/follow", followRouter);
 app.use("/unfollow", unfollowRouter);
+
 app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => console.log(`Server is running now on ${PORT} port`));
