@@ -38,16 +38,16 @@ const getUser = async (req, res) => {
     // Catch any errors related to token verification or database issues
     console.error(error);
     return res.status(500).json({ message: "Server error or invalid token" });
-  }
-};
+  } 
+};  
 
 const updateUser = async (req, res) => {
   const { name, email, username, password, profilePic, bio } = req.body;
   const { id } = req.params;
 
-  console.log("Request Params ID:", id);
+  console.log("Request Params ID:", id); 
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) { 
     return res.status(400).json({ message: "Invalid user ID" });
   }
 
