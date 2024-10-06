@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user-model"); // Ensure this is properly imported
 const secretKey = "CLIENT_SECRET_KEY";
-const mongoose= require("mongoose");
+const mongoose = require("mongoose");
+
 const getUser = async (req, res) => {
   const { token } = req.headers;
 
@@ -51,40 +52,41 @@ const updateUser = async (req, res) => {
   }
 
   try {
-      let user = await User.findById(id); 
+    let user = await User.findById(id);
 
-      if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) return res.status(400).json({ message: "User not found" });
 
-    
-      if (id !== user._id.toString()) {
-         return res.status(400).json({ message: "You cannot update other user's profile" });
-      }
+    if (id !== user._id.toString()) {
+      return res
+        .status(400)
+        .json({ message: "You cannot update other user's profile" });
+    }
 
-      
-      if (password) {
-          const salt = await bcrypt.genSalt(10);
-          const hashedPassword = await bcrypt.hash(password, salt);
-          user.password = hashedPassword;
-      }
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      user.password = hashedPassword;
+    }
 
-      
-      user.name = name || user.name;
-      user.email = email || user.email;
-      user.username = username || user.username;
-      user.profilePic = profilePic || user.profilePic;
-      user.bio = bio || user.bio;
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.username = username || user.username;
+    user.profilePic = profilePic || user.profilePic;
+    user.bio = bio || user.bio;
 
-      
-      await user.save();
+    await user.save();
 
-      console.log("Updated User:", user);
+    console.log("Updated User:", user);
 
-      res.status(200).json(user);
+    res.status(200).json(user);
   } catch (err) {
-      console.error("Error occurred:", err); 
-      res.status(500).json({ message: "Error updating user!", error: err.message });
+    console.error("Error occurred:", err);
+    res
+      .status(500)
+      .json({ message: "Error updating user!", error: err.message });
   }
 };
 module.exports = {
-  getUser,updateUser
+  getUser,
+  updateUser,
 };
