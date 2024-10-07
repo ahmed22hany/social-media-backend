@@ -1,48 +1,49 @@
+const mongoose = require("mongoose");
 const Post = require("../models/post-model");
 const User = require("../models/user-model");
 
 const addPost = async (req, res) => {
   try {
-    const { text, image } = req.body;
-    const userId = req.user._id;
-    const username = req.user.username;
-    const userProfilePic = req.user.profilePic;
-    if (!userId) {
+    const { text, image, postedBy, username, userProfilePic } = req.body;
+
+    if (!postedBy) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-    const newPost = new post({ text, image, userId, username, userProfilePic });
+
+    const newPost = await new Post({
+      text: text,
+      image: image,
+      postedBy: postedBy,
+      username: username,
+      userProfilePic: userProfilePic,
+    });
     await newPost.save();
-    return newPost;
+    return res.status(200).json({ message: "Post created successfully" });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-    const deletePost = async (req, res) => {
-        try {
-          const deletedPost = await Post.findByIdAndDelete(req.params.id);
-          if (!deletedPost) return res.status(404).json({ message: 'Post not found' });
-        
-          res.status(200).json({ message: 'Post deleted' });
-        } catch (err) {
-          res.status(500).json({ message: 'Server error', error: err.message });
-        }
-      };
-      
+const deletePost = async (req, res) => {
+  try {
+    const postId = await Post.findByIdAndDelete(req.params.id);
+    if (!postId) return res.status(404).json({ message: "Post not found" });
+
+    res.status(200).json({ message: "Post deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
+    console.log(post);
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
-    }
-
-    // Check if the user is authorized to update the post
-    if (post.postedBy.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this post" });
     }
 
     // If authorized, update the post
@@ -59,18 +60,15 @@ const updatePost = async (req, res) => {
 
 const replyToPost = async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, userId, username, userProfilePIC } = req.body;
     const postId = req.params.id;
-    const userId = req.user._id;
-    const username = req.user.username;
-    const userProfilePIC = req.user.profilePic;
 
-    const user = await user.findById(userId);
+    const user = await User.findById(userId);
     if (!userId) {
-      return res.status(401).json({ message: "User not authenticated" });
+      return res.status(401).json({ message: "User not authenticated", user });
     }
 
-    const post = await post.findById(postId);
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -80,6 +78,7 @@ const replyToPost = async (req, res) => {
     }
     const reply = { userId, username, userProfilePIC, text };
     post.replies.push(reply);
+    console.log(post.replies);
     await post.save();
     res.json({ message: "Reply added successfully", post });
   } catch (err) {
@@ -90,26 +89,29 @@ const replyToPost = async (req, res) => {
 
 const deleteReply = async (req, res) => {
   try {
-    const postId = req.params.id;
-    const replyId = req.params.replyId;
-    const userId = req.user._id;
+    const replyId = req.params.id;
+    console.log(replyId);
+    const { userId, postId } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    const post = await post.findById(postId);
+    const post = await Post.findById(postId);
+    console.log(post);
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const reply = await post.replies.id(replyId);
-    if (!reply) {
+    if (!replyId) {
       return res.status(404).json({ message: "Reply not found" });
     }
-    await reply.remove();
+
+    post.replies.pull(replyId);
     await post.save();
-    res.json({ message: "Reply deleted successfully", reply });
+
+    res.json({ message: "Reply deleted successfully" });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Server error" });
