@@ -15,7 +15,9 @@ const unfollowUser = async (req, res) => {
 
     //check if not following the user
     if (!user.following.includes(unfollowUserID)) {
-      return res.status(404).json({ message: "User is not Followed By You" });
+      return res
+        .status(400)
+        .json({ message: "You are not following this user" });
     }
 
     //make the unfollow operation
@@ -28,7 +30,9 @@ const unfollowUser = async (req, res) => {
 
     return res.status(200).json({ message: "User Unfollowed Successfully" });
   } catch (error) {
-    return res.status(404).json({ message: "Error" });
+    return res
+      .status(500)
+      .json({ message: "An error occurred while processing your request" });
   }
 };
 
