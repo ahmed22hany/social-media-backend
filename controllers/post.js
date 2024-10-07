@@ -1,6 +1,24 @@
 const Post = require("../models/post-model");
 const User = require("../models/user-model");
 
+const addpost = async (req, res) => {
+  try {
+    const { text, image } = req.body;
+    const userId = req.user._id;
+    const username = req.user.username;
+    const userProfilePic = req.user.profilePic;
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const newPost = new post({ text, image, userId, username, userProfilePic });
+    await newPost.save();
+    return newPost;
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -8,45 +26,6 @@ const updatePost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-const addpost = async (req,res  )=>{
-    try{
-        const {text, image}=req.body;
-        const userId=req.user._id;
-        const username=req.user.username;
-        const userProfilePic=req.user.profilePic;
-        if(!userId ){
-            return res.status(401).json({message: 'User not authenticated'})
-        }
-        const newPost = new post({text, image, userId, username, userProfilePic})
-        await newPost.save()
-        return newPost
-    }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({message: 'Server error'})  
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // Check if the user is authorized to update the post
     if (post.postedBy.toString() !== req.user._id.toString()) {
@@ -126,4 +105,4 @@ const deleteReply = async (req, res) => {
   }
 };
 
-module.exports = { replyToPost, deleteReply, updatePost };
+module.exports = { replyToPost, deleteReply, updatePost, addpost };
