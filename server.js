@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const authRouter = require("./routes/auth-routes");
 const followRouter = require("./routes/follow");
 const unfollowRouter = require("./routes/UnFollow");
+
+const postRouter = require("./routes/post.routes");
+
 const getPostRouter = require("./routes/getPost");
 const editCommentRouter = require("./routes/editComment");
 
@@ -46,8 +49,12 @@ app.use(express.json());
 
 app.use("/follow", followRouter);
 app.use("/unfollow", unfollowRouter);
+
 app.use("/api/auth", authRouter);
+
 app.use("/post/:id", getPostRouter);
 app.use("/post/:postID/replies/:replyID", editCommentRouter);
+
+app.use("/api/post", postRouter);
 
 app.listen(PORT, () => console.log(`Server is running now on ${PORT} port`));

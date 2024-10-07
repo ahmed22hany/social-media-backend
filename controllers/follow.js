@@ -7,7 +7,7 @@ const followUser = async (req, res) => {
     //get the users from the DataBase
     const user = await userModel.findById(userID);
     const userToFollow = await userModel.findById(followUserID);
-
+   
     //validate the IDs
     if (!userID || !userToFollow) {
       return res.status(404).json({ message: "user not found!" });
