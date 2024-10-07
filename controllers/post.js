@@ -60,5 +60,44 @@ const replyToPost= async (req,res)=>{
             return res.status(500).json({message: 'Server error'})
         }
     }
+const addpost = async (req,res  )=>{
+    try{
+        const {text, image}=req.body;
+        const userId=req.user._id;
+        const username=req.user.username;
+        const userProfilePic=req.user.profilePic;
+        if(!userId ){
+            return res.status(401).json({message: 'User not authenticated'})
+        }
+        const newPost = new post({text, image, userId, username, userProfilePic})
+        await newPost.save()
+        return newPost
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({message: 'Server error'})  
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     module.exports={replyToPost, deleteReply};
