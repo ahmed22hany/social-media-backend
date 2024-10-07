@@ -1,7 +1,7 @@
 const Post = require("../models/post-model");
 const User = require("../models/user-model");
 
-const addpost = async (req, res) => {
+const addPost = async (req, res) => {
   try {
     const { text, image } = req.body;
     const userId = req.user._id;
@@ -19,6 +19,17 @@ const addpost = async (req, res) => {
   }
 };
 
+    const deletePost = async (req, res) => {
+        try {
+          const deletedPost = await Post.findByIdAndDelete(req.params.id);
+          if (!deletedPost) return res.status(404).json({ message: 'Post not found' });
+        
+          res.status(200).json({ message: 'Post deleted' });
+        } catch (err) {
+          res.status(500).json({ message: 'Server error', error: err.message });
+        }
+      };
+      
 const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -105,4 +116,4 @@ const deleteReply = async (req, res) => {
   }
 };
 
-module.exports = { replyToPost, deleteReply, updatePost, addpost };
+module.exports = { replyToPost, deleteReply, updatePost, addPost, deletePost };
