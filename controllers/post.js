@@ -58,6 +58,31 @@ const updatePost = async (req, res) => {
   }
 };
 
+const getFeedPost=async(req,res)=>{
+    try {
+        const currentUser = await User.findById(req.body._id);
+        
+        if (!currentUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+    
+        // Fetch posts created by the current user
+        const userPosts = await Post.find({ userId: currentUser._id.toString()});
+        // Fetch posts from friends using Promise.all
+        const friendPosts = await Promise.all(
+            currentUser.following.map(async (friendId) => {
+                return await Post.find({ userId: friendId });
+            })
+        );
+    
+        // Concatenate user posts and friend posts
+        res.json(userPosts.concat(...friendPosts));
+    } catch (err) {
+        console.error(err); // Better error logging
+        res.status(500).json({ message: 'Server error' });
+    }
+    };
+
 const replyToPost = async (req, res) => {
   try {
     const { text, userId, username, userProfilePIC } = req.body;
@@ -118,4 +143,6 @@ const deleteReply = async (req, res) => {
   }
 };
 
-module.exports = { replyToPost, deleteReply, updatePost, addPost, deletePost };
+
+
+module.exports = { replyToPost, deleteReply, updatePost, addPost, deletePost,getFeedPost };
