@@ -15,7 +15,7 @@ const followUser = async (req, res) => {
 
     //check if already following the user
     if (user.following.includes(followUserID)) {
-      return res.status(404).json({ message: "User Already Followed" });
+      return res.status(409).json({ message: "User Already Followed" });
     }
 
     //make the follow operation
@@ -26,9 +26,9 @@ const followUser = async (req, res) => {
     await user.save();
     await userToFollow.save();
 
-    return res.status(200).json({ message: "User Followed Successfully" });
+    return res.status(201).json({ message: "User Followed Successfully" });
   } catch (error) {
-    return res.status(404).json({ message: "User not found in our DataBase!" });
+    return res.status(500).json({ message: "UAn error occurred while processing your request." });
   }
 };
 
