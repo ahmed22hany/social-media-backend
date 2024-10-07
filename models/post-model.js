@@ -21,7 +21,7 @@ const postSchema = mongoose.Schema(
     },
     likes: [
       {
-        type: string,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         default: 0,
       },
@@ -51,5 +51,4 @@ const postSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-
 module.exports = mongoose.model("Post", postSchema);
