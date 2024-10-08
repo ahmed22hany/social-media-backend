@@ -6,6 +6,8 @@ const {
   updatePost,
   addPost,
   deletePost,
+
+  likePost,
   getFeedPost
 } = require("../controllers/post");
 
@@ -15,5 +17,6 @@ router.get("/feed", getFeedPost);
 router.delete("/delete/reply/:id", deleteReply);
 router.put("/:id", updatePost);
 router.delete("/delete/:id", deletePost);
+router.post('/like/:id', likePost);
 
 module.exports = router;

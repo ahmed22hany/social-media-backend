@@ -57,4 +57,10 @@ app.use("/post", editCommentRouter);
 
 app.use("/api/post", postRouter);
 
+
+
+const postRoutes = require('./routes/post.routes'); 
+app.use('/api/auth', postRoutes);
+
 app.listen(PORT, () => console.log(`Server is running now on ${PORT} port`));
+
