@@ -52,8 +52,8 @@ app.use("/unfollow", unfollowRouter);
 
 app.use("/api/auth", authRouter);
 
-app.use("/post/:id", getPostRouter);
-app.use("/post/:postID/replies/:replyID", editCommentRouter);
+app.use("/post", getPostRouter);
+app.use("/post", editCommentRouter);
 
 app.use("/api/post", postRouter);
 
