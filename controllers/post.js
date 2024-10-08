@@ -151,8 +151,8 @@ const deleteReply = async (req, res) => {
 };
 const likePost = async (req, res) => {
   try {
-    const { id } = req.params; 
-    const { userId } = req.body; 
+    const { id } = req.params;
+    const { userId } = req.body;
 
     // Find the post by its ID
     const post = await Post.findById(id);
@@ -160,16 +160,20 @@ const likePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
- 
-
-    if (!userId || typeof userId !== 'string' || userId.trim() === '') {
-      return res.status(400).json({ message: `Valid User ID is required and must be a string. Received: ${userId}` });  
-}
-const user = await User.findById(userId);
-console.log(user);
-if (!user) {
-  return res.status(404).json({ message: `User with ID ${userId} not found `});
-}
+    if (!userId || typeof userId !== "string" || userId.trim() === "") {
+      return res
+        .status(400)
+        .json({
+          message: `Valid User ID is required and must be a string. Received: ${userId}`,
+        });
+    }
+    const user = await User.findById(userId);
+    console.log(user);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: `User with ID ${userId} not found ` });
+    }
     // Check if the user has already liked the post
     const isLiked = post.likes.includes(userId);
 
@@ -187,15 +191,18 @@ if (!user) {
     // Send a response after saving
     const message = isLiked ? "unlike" : "like";
     res.status(200).json({ message });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
 
-
-
-
-module.exports = { replyToPost, deleteReply, updatePost, addPost, deletePost,likePost };
-
+module.exports = {
+  replyToPost,
+  getFeedPost,
+  deleteReply,
+  updatePost,
+  addPost,
+  deletePost,
+  likePost,
+};
