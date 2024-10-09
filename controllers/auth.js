@@ -59,24 +59,21 @@ const UserLogin = async (req, res) => {
         message: "User doesn't exists! Please register first",
       });
 
-    const checkPasswordMatch = await bcrypt.compare(
-      password,
-      checkUser.password
-    );
-
-    if (!checkPasswordMatch)
+    if (!bcrypt.compareSync(password, checkUser.password)) {
       return res.json({
         success: false,
-        message: "Incorrect password! Please try again",
+        message: "Please update your password",
       });
+    }
 
     const token = jwt.sign(
       {
         id: checkUser._id,
         email: checkUser.email,
-        username: checkUser.username,
+        password: checkUser.password,
       },
-      "CLIENT_SECRET_KEY",
+
+      "CLIENT_SECRET_KEY", // need to be in .env file with secret key
       { expiresIn: "60m" }
     );
 
@@ -86,9 +83,11 @@ const UserLogin = async (req, res) => {
       user: {
         email: checkUser.email,
         id: checkUser._id,
-        username: checkUser.username,
+        password: checkUser.password,
       },
     });
+
+    await checkUser.save();
   } catch (e) {
     console.log(e);
     res.status(500).json({
@@ -99,8 +98,14 @@ const UserLogin = async (req, res) => {
 };
 
 // logout
-
 const UserLogout = (req, res) => {
+  if (!req.headers.token) {
+    console.log(req.headers.token);
+    return res
+      .status(401)
+      .json({ success: false, message: "Unauthorized: No token provided" });
+  }
+
   res.clearCookie("token", { httpOnly: true, secure: false });
   return res.status(200).json({
     success: true,
