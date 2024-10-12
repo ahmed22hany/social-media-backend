@@ -1,10 +1,43 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user-model"); // Ensure this is properly imported
+const Post = require("../models/post-model");
 const secretKey = "CLIENT_SECRET_KEY";
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const getUser = async (req, res) => {
+  const { id } = req.params;
+
+  console.log("Received userId:", id);
+  // Check if the userId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid user ID format" });
+  }
+
+  try {
+    // Fetch the user from the database using the provided userId
+    const user = await User.findById(id);
+
+    if (user) {
+      // Fetch the posts created by the user, populate necessary fields
+      const posts = await Post.find({ postedBy: user._id })
+        .populate("postedBy", "username profilePic") // Populate postedBy with username and profilePic
+        .populate("likes", "username") // Populate likes with username
+        .populate("replies.userId", "username profilePic"); // Populate replies with user details
+
+      // Return the user details and their posts
+      return res.status(200).json({ ok: true, user, posts });
+    } else {
+      // If user is not found, return a 404 error
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getAuthUser = async (req, res) => {
   const { token } = req.headers;
 
   // Check if token is present
@@ -45,10 +78,6 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { name, email, username, password, profilePic, bio } = req.body;
   const { id } = req.params; // looged in user ID
-
-  // if (!mongoose.Types.ObjectId.isValid(id)) {
-  //   return res.status(400).json({ message: "Invalid user ID" });
-  // }
 
   try {
     let user = await User.findById(id);
@@ -94,4 +123,5 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  getAuthUser,
 };
