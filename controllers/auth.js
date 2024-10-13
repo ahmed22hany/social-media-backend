@@ -51,56 +51,54 @@ const UserRegister = async (req, res) => {
 const UserLogin = async (req, res) => {
   const { email, password } = req.body;
 
+  // Check if email and password are provided
   if (!email || !password) {
-    return res.status(400).send({
+    return res.status(400).json({
       success: false,
       message: "All fields are required",
     });
   }
 
   try {
+    // Check if the user exists
     const checkUser = await User.findOne({ email });
-
-    if (!checkUser)
-      return res.json({
+    if (!checkUser) {
+      return res.status(404).json({
         success: false,
-        message: "User doesn't exists! Please register first",
-      });
-
-    if (!bcrypt.compareSync(password, checkUser.password)) {
-      return res.json({
-        success: false,
-        message: "Please update your password",
+        message: "User doesn't exist! Please register first",
       });
     }
 
+    // Compare provided password with the stored hashed password
+    const isPasswordValid = bcrypt.compareSync(password, checkUser.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password",
+      });
+    }
+
+    // Generate the JWT token
     const token = jwt.sign(
       {
         id: checkUser._id,
         email: checkUser.email,
-        password: checkUser.password,
       },
-
-      "CLIENT_SECRET_KEY", // need to be in .env file with secret key
-      { expiresIn: "60m" }
+      "CLIENT_SECRET_KEY", // Replace with your actual secret key from .env file
+      { expiresIn: "60m" } // Token expires in 60 minutes
     );
 
-    res.cookie("token", token, { httpOnly: true, secure: false }).json({
+    // Send the response with the token
+    res.status(200).json({
       success: true,
       message: "Logged in successfully",
-      user: {
-        email: checkUser.email,
-        id: checkUser._id,
-        password: checkUser.password,
-      },
+      token, // Include the token in the response
     });
-
-    await checkUser.save();
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({
       success: false,
-      message: "Some error occured",
+      message: "An error occurred. Please try again.",
     });
   }
 };
