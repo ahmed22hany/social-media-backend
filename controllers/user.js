@@ -42,17 +42,24 @@ const getAuthUser = async (req, res) => {
 
   // Check if token is present
   if (!token) {
-    return res
-      .status(401)
-      .json({ ok: false, message: "You are not authorized" });
+    return res.status(401).json({
+      ok: false,
+      isAuthenticated: false,
+      message: "You are not authorized",
+    });
   }
 
   try {
     // Verify the token and decode it
     const decodedToken = jwt.verify(token, secretKey); // 'secretKey' should be your actual JWT secret
 
-    if (!decodedToken) {
-      return res.status(401).json({ message: "Invalid or expired token" });
+    // Check if the token is valid and contains an ID
+    if (!decodedToken || !decodedToken.id) {
+      return res.status(401).json({
+        ok: false,
+        isAuthenticated: false,
+        message: "Invalid or expired token",
+      });
     }
 
     // Extract user ID from decoded token
@@ -63,15 +70,25 @@ const getAuthUser = async (req, res) => {
 
     if (user) {
       // If user is found, send the user details
-      res.status(200).json({ ok: true, user });
+      res.status(200).json({
+        ok: true,
+        isAuthenticated: true,
+        user: { id: user._id, name: user.name, email: user.email }, // Adjust based on your user schema
+      });
     } else {
       // If user is not found, send 404
-      res.status(404).json({ message: "User not found" });
+      res
+        .status(404)
+        .json({ ok: false, isAuthenticated: false, message: "User not found" });
     }
   } catch (error) {
     // Catch any errors related to token verification or database issues
     console.error(error);
-    return res.status(500).json({ message: "Server error or invalid token" });
+    return res.status(500).json({
+      ok: false,
+      isAuthenticated: false,
+      message: "Server error or invalid token",
+    });
   }
 };
 

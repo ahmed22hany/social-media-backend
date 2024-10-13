@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 5001;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -57,10 +57,7 @@ app.use("/post", editCommentRouter);
 
 app.use("/api/post", postRouter);
 
-
-
-const postRoutes = require('./routes/post.routes'); 
-app.use('/api/auth', postRoutes);
+const postRoutes = require("./routes/post.routes");
+app.use("/api/auth", postRoutes);
 
 app.listen(PORT, () => console.log(`Server is running now on ${PORT} port`));
-
