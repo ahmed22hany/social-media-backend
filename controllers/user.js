@@ -8,7 +8,6 @@ const bcrypt = require("bcryptjs");
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  console.log("Received userId:", id);
   // Check if the userId is a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid user ID format" });
@@ -23,7 +22,7 @@ const getUser = async (req, res) => {
       const posts = await Post.find({ postedBy: user._id })
         .populate("postedBy", "username profilePic") // Populate postedBy with username and profilePic
         .populate("likes", "username") // Populate likes with username
-        .populate("replies.userId", "username profilePic"); // Populate replies with user details
+        .populate("replies", "username profilePic"); // Populate replies with user details
 
       // Return the user details and their posts
       return res.status(200).json({ ok: true, user, posts });
