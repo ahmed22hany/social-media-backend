@@ -59,8 +59,16 @@ const updatePost = async (req, res) => {
 };
 
 const getFeedPost = async (req, res) => {
+  const { id } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid User ID" });
+  }
+
   try {
-    const currentUser = await User.findById(req.body._id);
+    const currentUser = await User.findById(id);
+
+    console.log(currentUser);
 
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
@@ -161,11 +169,9 @@ const likePost = async (req, res) => {
     }
 
     if (!userId || typeof userId !== "string" || userId.trim() === "") {
-      return res
-        .status(400)
-        .json({
-          message: `Valid User ID is required and must be a string. Received: ${userId}`,
-        });
+      return res.status(400).json({
+        message: `Valid User ID is required and must be a string. Received: ${userId}`,
+      });
     }
     const user = await User.findById(userId);
     console.log(user);
