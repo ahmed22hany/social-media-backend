@@ -37,6 +37,7 @@ app.use(
     allowedHeaders: [
       "Content-Type",
       "Authorization",
+      "token",
       "Cache-Control",
       "Expires",
       "Pragma",
