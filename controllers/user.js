@@ -15,7 +15,9 @@ const getUser = async (req, res) => {
 
   try {
     // Fetch the user from the database using the provided userId
-    const user = await User.findById(id);
+    const user = await User.findById(id)
+      .populate("following", "username profilePic")
+      .populate("followers", "username profilePic");
 
     if (user) {
       // Fetch the posts created by the user, populate necessary fields
@@ -63,16 +65,22 @@ const getAuthUser = async (req, res) => {
 
     // Extract user ID from decoded token
     const { id } = decodedToken;
-
     // Fetch the user from the database using the ID
-    const user = await User.findById(id);
+    const user = await User.findById(id)
+      .populate("following", "username profilePic")
+      .populate("followers", "username profilePic");
 
     if (user) {
       // If user is found, send the user details
+      const post = await Post.find({ postedBy: user._id })
+        .populate("postedBy", "username profilePic  bio")
+        .populate("likes", "username")
+        .populate("replies", "username profilePic");
       res.status(200).json({
         ok: true,
         isAuthenticated: true,
-        user: { id: user._id, name: user.name, email: user.email }, // Adjust based on your user schema
+        user,
+        post,
       });
     } else {
       // If user is not found, send 404
