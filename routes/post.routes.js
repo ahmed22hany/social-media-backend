@@ -1,22 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const {
-  replyToPost,
+  addReply,
   deleteReply,
   updatePost,
   addPost,
   deletePost,
 
   likePost,
-  getFeedPost
+  getFeedPost,
 } = require("../controllers/post");
 
 router.post("/", addPost);
-router.post("/reply/:id", replyToPost);
-router.get("/feed", getFeedPost);
+router.post("/reply/:id", addReply);
+router.get("/feed/:id", getFeedPost);
 router.delete("/delete/reply/:id", deleteReply);
 router.put("/:id", updatePost);
 router.delete("/delete/:id", deletePost);
-router.post('/like/:id', likePost);
+router.post("/like/:id", likePost);
 
 module.exports = router;

@@ -59,7 +59,7 @@ const updatePost = async (req, res) => {
 };
 
 const getFeedPost = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid User ID" });
@@ -98,12 +98,13 @@ const getFeedPost = async (req, res) => {
   }
 };
 
-const replyToPost = async (req, res) => {
+const addReply = async (req, res) => {
   try {
     const { text, userId, username, userProfilePIC } = req.body;
-    const postId = req.params.id;
+    const postId = req.params.id; //post id
 
     const user = await User.findById(userId);
+
     if (!userId) {
       return res.status(401).json({ message: "User not authenticated", user });
     }
@@ -116,11 +117,12 @@ const replyToPost = async (req, res) => {
     if (!text) {
       return res.status(400).json({ message: "Text is required" });
     }
+
     const reply = { userId, username, userProfilePIC, text };
     post.replies.push(reply);
-    console.log(post.replies);
     await post.save();
-    res.json({ message: "Reply added successfully", post });
+
+    res.status(200).json({ message: "Reply added successfully", reply });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Server error" });
@@ -204,7 +206,7 @@ const likePost = async (req, res) => {
 };
 
 module.exports = {
-  replyToPost,
+  addReply,
   getFeedPost,
   deleteReply,
   updatePost,
